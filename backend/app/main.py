@@ -1,23 +1,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import tasks, ai
-from .settings import settings
 
-app = FastAPI(title="AI-Powered Personal Dashboard API")
+from app.api.routes import auth, entries, insights
+
+app = FastAPI(title="AI Personal Dashboard API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[origin.strip() for origin in settings.ALLOWED_ORIGINS.split(",") if origin.strip()],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(entries.router, prefix="/entries", tags=["entries"])
+app.include_router(insights.router, prefix="/insights", tags=["insights"])
+
+
 @app.get("/health")
-def health():
+def health() -> dict[str, str]:
     return {"status": "ok"}
-
-app.include_router(tasks.router, prefix="/tasks", tags=["tasks"])
-app.include_router(ai.router, prefix="/ai", tags=["ai"])
-
-
