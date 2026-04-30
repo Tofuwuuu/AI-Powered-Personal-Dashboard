@@ -5,7 +5,7 @@ import App from '../App'
 
 describe('App', () => {
   it('renders dashboard title when logged out', () => {
-    const { getByText } = render(<App />)
-    expect(getByText('AI Personal Dashboard')).toBeTruthy()
+    const { getByRole } = render(<App />)
+    expect(getByRole('heading', { level: 1, name: 'AI Personal Dashboard' })).toBeTruthy()
   })
 })

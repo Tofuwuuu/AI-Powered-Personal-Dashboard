@@ -48,11 +48,11 @@ export default function AuthForm({
         </button>
       </div>
 
-      <h2 className='auth-title'>{mode === 'login' ? 'Welcome Back...' : 'Create Account'}</h2>
+      <h2 className='auth-title'>{mode === 'login' ? 'Welcome back' : 'Create account'}</h2>
       <p className='auth-subtitle'>
         {mode === 'login'
-          ? 'Please enter your email and password'
-          : 'Start journaling and unlock AI-powered insights'}
+          ? 'Use your email and password to continue.'
+          : 'Start journaling and unlock AI-powered insights.'}
       </p>
 
       <label className='field-label'>

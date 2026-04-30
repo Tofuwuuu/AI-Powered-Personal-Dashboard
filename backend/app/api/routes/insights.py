@@ -3,6 +3,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
+from sqlalchemy.dialects.postgresql import JSONB
 
 from app.api.deps import get_current_user
 from app.db.session import get_db
@@ -15,26 +16,32 @@ router = APIRouter()
 
 @router.get("/overview")
 def overview(from_date: datetime | None = None, to_date: datetime | None = None, db: Session = Depends(get_db), user: User = Depends(get_current_user)) -> dict:
-    base = select(Analysis).join(Entry, Entry.id == Analysis.entry_id).where(Entry.user_id == user.id, Analysis.status == "completed")
+    filters = [Entry.user_id == user.id, Analysis.status == "completed"]
     if from_date:
-        base = base.where(Entry.created_at >= from_date)
+        filters.append(Entry.created_at >= from_date)
     if to_date:
-        base = base.where(Entry.created_at <= to_date)
+        filters.append(Entry.created_at <= to_date)
 
-    sentiments = db.execute(select(Analysis.sentiment, func.count(Analysis.id)).select_from(base.subquery()).group_by(Analysis.sentiment)).all()
+    sentiments = db.execute(
+        select(Analysis.sentiment, func.count(Analysis.id))
+        .join(Entry, Entry.id == Analysis.entry_id)
+        .where(*filters)
+        .group_by(Analysis.sentiment)
+    ).all()
+
     classes = db.execute(
         select(Analysis.classification, func.count(Analysis.id))
         .join(Entry, Entry.id == Analysis.entry_id)
-        .where(Entry.user_id == user.id, Analysis.status == "completed")
+        .where(*filters)
         .group_by(Analysis.classification)
         .order_by(func.count(Analysis.id).desc())
         .limit(5)
     ).all()
 
     topics = db.execute(
-        select(func.jsonb_array_elements_text(Analysis.key_topics).label("topic"), func.count(Analysis.id).label("count"))
+        select(func.jsonb_array_elements_text(func.cast(Analysis.key_topics, JSONB)).label("topic"), func.count(Analysis.id).label("count"))
         .join(Entry, Entry.id == Analysis.entry_id)
-        .where(Entry.user_id == user.id, Analysis.status == "completed")
+        .where(*filters, Analysis.key_topics.is_not(None))
         .group_by("topic")
         .order_by(func.count(Analysis.id).desc())
         .limit(10)
