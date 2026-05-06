@@ -72,7 +72,7 @@ export default function AuthForm({
         Password
         <input
           className='auth-input'
-          placeholder='••••••••'
+          placeholder='Password'
           type='password'
           minLength={6}
           value={password}
@@ -85,7 +85,7 @@ export default function AuthForm({
       {mode === 'register' && <div className='auth-hint'>Use at least 6 characters.</div>}
 
       <button className='btn-submit' type='submit' disabled={submitting}>
-        {submitting ? 'Please wait…' : mode === 'login' ? 'Login' : 'Register'}
+        {submitting ? 'Please wait...' : mode === 'login' ? 'Login' : 'Register'}
       </button>
       <p className='auth-bottom-note'>
         {mode === 'login' ? "Don't have an account yet? " : 'Already have an account? '}

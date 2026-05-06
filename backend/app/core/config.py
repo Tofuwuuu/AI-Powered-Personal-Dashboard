@@ -1,4 +1,10 @@
+import os
+
+from dotenv import load_dotenv
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+load_dotenv()
 
 
 class Settings(BaseSettings):
@@ -12,9 +18,10 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     refresh_token_expire_minutes: int = 10080
 
-    ai_provider: str = "openai"
-    openai_api_key: str = ""
-    openai_model: str = "gpt-4.1-mini"
+    ai_provider: str = Field(default_factory=lambda: os.getenv("AI_PROVIDER", "google"))
+    google_api_key: str = Field(default_factory=lambda: os.getenv("GOOGLE_API_KEY", ""))
+    google_model: str = Field(default_factory=lambda: os.getenv("GOOGLE_MODEL", "gemini-2.0-flash"))
+    google_fallback_model: str = Field(default_factory=lambda: os.getenv("GOOGLE_FALLBACK_MODEL", "gemini-2.0-flash-lite"))
 
 
 settings = Settings()

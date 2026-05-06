@@ -4,5 +4,37 @@ export default function EntryComposer({ onSubmit }: { onSubmit: (text: string) =
   const [submitting, setSubmitting] = useState(false)
   const trimmed = text.trim()
 
-  return <form className='card' onSubmit={async (e) => { e.preventDefault(); if (!trimmed || submitting) return; setSubmitting(true); try { await onSubmit(trimmed); setText('') } finally { setSubmitting(false) } }}><h2>New journal entry</h2><textarea value={text} onChange={(e) => setText(e.target.value)} rows={5} placeholder='Write your day, goals, or notes...' /><button type='submit' disabled={!trimmed || submitting}>{submitting ? 'Submitting...' : 'Submit for AI analysis'}</button></form>
+  return (
+    <form
+      className='card composer-card'
+      onSubmit={async (e) => {
+        e.preventDefault()
+        if (!trimmed || submitting) return
+        setSubmitting(true)
+        try {
+          await onSubmit(trimmed)
+          setText('')
+        } finally {
+          setSubmitting(false)
+        }
+      }}
+    >
+      <div className='section-heading'>
+        <div>
+          <p className='section-kicker'>Capture</p>
+          <h2>New journal entry</h2>
+        </div>
+        <span className='counter'>{trimmed.length}</span>
+      </div>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={9}
+        placeholder='What stood out today?'
+      />
+      <button type='submit' disabled={!trimmed || submitting}>
+        {submitting ? 'Submitting...' : 'Analyze entry'}
+      </button>
+    </form>
+  )
 }

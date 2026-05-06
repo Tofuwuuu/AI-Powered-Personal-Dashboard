@@ -17,6 +17,11 @@ services:
     build: { context: ./backend }
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     env_file: [.env]
+    environment:
+      AI_PROVIDER: ${AI_PROVIDER:-google}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      GOOGLE_MODEL: ${GOOGLE_MODEL:-gemini-2.0-flash}
+      GOOGLE_FALLBACK_MODEL: ${GOOGLE_FALLBACK_MODEL:-gemini-2.0-flash-lite}
     ports: ['8000:8000']
     volumes: ['./backend:/app']
     depends_on: [db, redis]
@@ -25,6 +30,11 @@ services:
     build: { context: ./backend }
     command: celery -A app.workers.tasks.celery_app worker --loglevel=info
     env_file: [.env]
+    environment:
+      AI_PROVIDER: ${AI_PROVIDER:-google}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      GOOGLE_MODEL: ${GOOGLE_MODEL:-gemini-2.0-flash}
+      GOOGLE_FALLBACK_MODEL: ${GOOGLE_FALLBACK_MODEL:-gemini-2.0-flash-lite}
     volumes: ['./backend:/app']
     depends_on: [db, redis]
 

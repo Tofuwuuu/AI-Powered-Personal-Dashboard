@@ -88,13 +88,25 @@ function App() {
   }, [user])
 
   const title = useMemo(() => (user ? `Welcome ${user.email}` : 'AI Personal Dashboard'), [user])
+  const completedCount = useMemo(
+    () => entries.filter((entry) => entry.analyses[0]?.status === 'completed').length,
+    [entries],
+  )
+  const latestSentiment = useMemo(() => {
+    const analysis = entries.find((entry) => entry.analyses[0]?.sentiment)?.analyses[0]
+    return analysis?.sentiment ?? 'No signal yet'
+  }, [entries])
 
   return (
     <main className='container'>
-      <header className='card row-between'>
-        <h1>{title}</h1>
+      <header className='app-header'>
+        <div>
+          <p className='app-kicker'>{user ? 'Journal workspace' : 'AI Personal Dashboard'}</p>
+          <h1>{title}</h1>
+        </div>
         {user && (
           <button
+            className='btn-secondary header-action'
             onClick={() => {
               logout()
               setUser(null)
@@ -152,6 +164,21 @@ function App() {
           {entriesError && <section className='card error'>{entriesError}</section>}
           {insightsError && <section className='card error'>{insightsError}</section>}
           {composerError && <section className='card error'>{composerError}</section>}
+
+          <section className='summary-strip'>
+            <div className='metric-card'>
+              <span>Total entries</span>
+              <strong>{entries.length}</strong>
+            </div>
+            <div className='metric-card'>
+              <span>Analyzed</span>
+              <strong>{completedCount}</strong>
+            </div>
+            <div className='metric-card'>
+              <span>Latest mood</span>
+              <strong className='metric-text'>{latestSentiment}</strong>
+            </div>
+          </section>
 
           <section className='grid'>
             <EntryComposer

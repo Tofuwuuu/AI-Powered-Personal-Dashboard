@@ -1,3 +1,5 @@
+import os
+
 from celery import Celery
 from sqlalchemy import select
 
@@ -14,6 +16,9 @@ celery_app = Celery("dashboard_worker", broker=settings.redis_url, backend=setti
 def process_entry_analysis(self, entry_id: int) -> None:
     db = SessionLocal()
     try:
+        if not (settings.google_api_key or os.getenv("GOOGLE_API_KEY", "")):
+            raise ValueError("GOOGLE_API_KEY is not configured for worker environment.")
+
         entry = db.get(Entry, entry_id)
         if not entry:
             return

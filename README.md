@@ -5,7 +5,7 @@ Full-stack personal dashboard built with React + TypeScript, FastAPI, PostgreSQL
 ## Features
 - JWT authentication (register/login/refresh/me)
 - Text entry submission and async AI analysis pipeline
-- JSON-schema-enforced AI outputs (summary, classification, sentiment, topics, action items, confidence)
+- Gemini JSON-schema-enforced AI outputs (summary, classification, sentiment, topics, action items, confidence)
 - Aggregated insights and trend endpoints
 - Data-driven dashboard UI with live polling
 
